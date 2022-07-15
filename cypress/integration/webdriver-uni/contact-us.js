@@ -3,7 +3,7 @@
 
 
 describe("Test Contact US form via WebdriverUni", () => {
-    it.only("Should be able to submit a successful submission via contact us form", () =>{
+    it("Should be able to submit a successful submission via contact us form", () =>{
         
         cy.visit("http://www.webdriveruniversity.com/Contact-Us/contactus.html");
         cy.url().should('include',"contactus.html")
