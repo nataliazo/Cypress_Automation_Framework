@@ -12,13 +12,57 @@ describe("Alias and Invoke", () => {
         cy.get('@productThumbnail').should('include', 'Seaweed Conditioner')
     })
 
-    it.only("Count prods in the list and validate title", () => {
+    it("Count prods in the list and validate title", () => {
         cy.visit("https://automationteststore.com/");
-        
+
         cy.get('.thumbnail').as('productThumbnaul')
         cy.get('@productThumbnaul').should('have.length', '16')
 
         cy.get('@productThumbnaul').find('.productcart').invoke('attr', 'title').should('include', 'Add to Cart')
     })
+    it.only("Calculate totel of mormal and sale products", () => {
+        cy.visit("https://automationteststore.com/");
+        cy.get('.thumbnail').as('productThumbnaul')
+        // cy.get('@productThumbnaul').find('.oneprice').each(($el, index, $list) => {
+        //     cy.log($el.text())
+        //     })
+        cy.get('.thumbnail').find('.oneprice').invoke('text').as('itemPrice');
+        cy.get('.thumbnail').find('.pricenew').invoke('text').as('saleItemPrice');
 
+        var itemsTotal = 0;
+        cy.get('@itemPrice').then($linkText => {
+            var itemsPriceTotal = 0;
+            var itemPrice = $linkText.split('$');
+            var i;
+            for (i = 0; i < itemPrice.length; i++) {
+                cy.log(itemPrice[i])
+                itemsPriceTotal += Number(itemPrice[i]);
+                //Number - to converse any string to number
+
+            }
+            itemsTotal += itemsPriceTotal
+            cy.log('Non sale price item total: ' + itemsPriceTotal)
+        })
+
+        cy.get('@saleItemPrice').then($linkText => {
+            var saleItemsPrice = 0
+            var saleItemPrice = $linkText.split('$');
+            var i;
+            for (i = 0; i < saleItemPrice.length; i++) {
+                cy.log(saleItemPrice[i])
+                saleItemsPrice += Number(saleItemPrice[i]);
+            }
+            
+            itemsTotal += saleItemsPrice;
+            cy.log('Sale price item total: ' + saleItemsPrice)
+
+        })
+        .then(() => {
+            cy.log("The total price of all products: " + itemsTotal)
+            expect(itemsTotal).to.equal(648.5)
+        })
+
+    })
 })
+
+
